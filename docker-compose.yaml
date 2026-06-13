@@ -1,0 +1,12 @@
+services:
+
+  database:
+    image: mongo:latest
+    volumes:
+      - mongo-data:/data/db
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - 27017:27017
+
+volumes:
+  mongo-data:
