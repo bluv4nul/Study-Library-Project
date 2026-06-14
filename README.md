@@ -2,7 +2,7 @@
 
 ## Быстрый старт для разработчиков CRUD и REST API
 
-### Как запустить MongoDB
+### Как запустить проект
 
 1. Откройте терминал в корне проекта.
 2. Выполните:
@@ -10,8 +10,22 @@
    docker compose up -d
    ```
 3. MongoDB будет доступна на `mongodb://localhost:27017`.
+4. REST API будет доступен на `http://localhost:3000`.
+5. Swagger-документация FastAPI будет доступна на `http://localhost:3000/docs`.
 
 > Сервис использует коллекции `authors`, `genres`, `publishers`, `books` в базе `electrolibrary`.
+
+### Серверная часть
+
+Серверная часть реализована на Python с использованием FastAPI и PyMongo.
+
+Основные возможности:
+- CRUD для книг, авторов, жанров и издательств,
+- получение книги вместе с авторами, жанрами и издательством,
+- фильтрация книг по названию, году, автору, жанру и издательству,
+- сортировка и пагинация списков,
+- сохранение данных в MongoDB,
+- запуск через Docker Compose.
 
 ### Структура данных
 
@@ -84,6 +98,28 @@
 
 - `/api/authors`, `/api/genres`, `/api/publishers`:
   - GET, POST, PUT/PATCH, DELETE
+
+### Фильтрация, сортировка и пагинация книг
+
+Примеры запросов:
+
+```bash
+GET /api/books?search=1984
+GET /api/books?year=1949
+GET /api/books?yearFrom=1930&yearTo=1950
+GET /api/books?author_id=OBJECT_ID
+GET /api/books?genre_id=OBJECT_ID
+GET /api/books?publisher_id=OBJECT_ID
+GET /api/books?sort=year&order=desc&page=1&limit=10
+```
+
+Для справочников авторов, жанров и издательств доступен поиск через `q`:
+
+```bash
+GET /api/authors?q=orwell
+GET /api/genres?q=fantasy
+GET /api/publishers?q=penguin
+```
 
 ### Примеры JSON для создания
 
