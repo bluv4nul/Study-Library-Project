@@ -73,6 +73,9 @@
         :submit-text="editingBook ? 'Сохранить изменения' : 'Создать книгу'"
         @submit="saveBook"
         @cancel="isModalOpen = false"
+        @createAuthor="createNewAuthor"
+        @createGenre="createNewGenre"
+        @createPublisher="createNewPublisher"
       />
     </BaseModal>
   </div>
@@ -186,6 +189,36 @@ const resetFilters = () => {
 const changePage = (page) => {
   filters.page = page;
   loadBooks();
+};
+
+const createNewAuthor = async ({ name, callback }) => {
+  try {
+    const newAuthor = await libraryApi.createAuthor({ author_name: name });
+    authors.value.push(newAuthor);
+    if (callback) callback(newAuthor);
+  } catch (err) {
+    error.value = 'Не удалось создать автора.';
+  }
+};
+
+const createNewGenre = async ({ name, callback }) => {
+  try {
+    const newGenre = await libraryApi.createGenre({ genre_name: name });
+    genres.value.push(newGenre);
+    if (callback) callback(newGenre);
+  } catch (err) {
+    error.value = 'Не удалось создать жанр.';
+  }
+};
+
+const createNewPublisher = async ({ name, callback }) => {
+  try {
+    const newPublisher = await libraryApi.createPublisher({ publisher_name: name });
+    publishers.value.push(newPublisher);
+    if (callback) callback(newPublisher);
+  } catch (err) {
+    error.value = 'Не удалось создать издательство.';
+  }
 };
 
 watch(() => [filters.author_id, filters.genre_id, filters.sort, filters.order], () => {

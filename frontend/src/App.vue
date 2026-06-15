@@ -11,7 +11,9 @@
 
       <nav class="nav-links">
         <RouterLink to="/books">Книги</RouterLink>
-        <RouterLink to="/about">О проекте</RouterLink>
+        <RouterLink to="/authors">Авторы</RouterLink>
+        <RouterLink to="/genres">Жанры</RouterLink>
+        <RouterLink to="/publishers">Издательства</RouterLink>
       </nav>
     </header>
 

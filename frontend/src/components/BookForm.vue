@@ -17,32 +17,39 @@
     </div>
 
     <label>
-      <span>Автор</span>
-      <select v-model="form.author_ids" multiple>
-        <option v-for="author in authors" :key="getId(author)" :value="getId(author)">
-          {{ author.author_name || author.name }}
-        </option>
-      </select>
-      <small>Можно выбрать несколько авторов через Ctrl / Cmd.</small>
+      <span>Авторы</span>
+      <EntitySelect
+        :items="authors"
+        :model-value="form.author_ids"
+        :is-multiple="true"
+        placeholder="Найти или добавить автора..."
+        @update:model-value="(v) => (form.author_ids = v)"
+        @createNew="handleCreateAuthor"
+      />
     </label>
 
     <label>
-      <span>Жанр</span>
-      <select v-model="form.genre_ids" multiple>
-        <option v-for="genre in genres" :key="getId(genre)" :value="getId(genre)">
-          {{ genre.genre_name || genre.name }}
-        </option>
-      </select>
+      <span>Жанры</span>
+      <EntitySelect
+        :items="genres"
+        :model-value="form.genre_ids"
+        :is-multiple="true"
+        placeholder="Найти или добавить жанр..."
+        @update:model-value="(v) => (form.genre_ids = v)"
+        @createNew="handleCreateGenre"
+      />
     </label>
 
     <label>
       <span>Издательство</span>
-      <select v-model="form.publisher_id">
-        <option value="">Не выбрано</option>
-        <option v-for="publisher in publishers" :key="getId(publisher)" :value="getId(publisher)">
-          {{ publisher.publisher_name || publisher.name }}
-        </option>
-      </select>
+      <EntitySelect
+        :items="publishers"
+        :model-value="form.publisher_id"
+        :is-multiple="false"
+        placeholder="Найти или добавить издательство..."
+        @update:model-value="(v) => (form.publisher_id = v)"
+        @createNew="handleCreatePublisher"
+      />
     </label>
 
     <div class="form-actions">
@@ -55,6 +62,7 @@
 <script setup>
 import { reactive, watch } from 'vue';
 import AppButton from './AppButton.vue';
+import EntitySelect from './EntitySelect.vue';
 import { normalizeId } from '../api/libraryApi';
 
 const props = defineProps({
@@ -65,7 +73,7 @@ const props = defineProps({
   submitText: { type: String, default: 'Сохранить' },
 });
 
-const emit = defineEmits(['submit', 'cancel']);
+const emit = defineEmits(['submit', 'cancel', 'createAuthor', 'createGenre', 'createPublisher']);
 
 const form = reactive({
   title: '',
@@ -104,6 +112,43 @@ const submitForm = () => {
     author_ids: form.author_ids,
     genre_ids: form.genre_ids,
     publisher_id: form.publisher_id || null,
+  });
+};
+
+const handleCreate = (eventName, name, onCreated) => {
+  emit(eventName, {
+    name,
+    callback: (createdEntity) => {
+      if (!createdEntity) return;
+      onCreated(createdEntity);
+    },
+  });
+};
+
+const handleCreateAuthor = (name) => {
+  handleCreate('createAuthor', name, (created) => {
+    const id = normalizeId(created);
+    if (id && !form.author_ids.includes(id)) {
+      form.author_ids = [...form.author_ids, id];
+    }
+  });
+};
+
+const handleCreateGenre = (name) => {
+  handleCreate('createGenre', name, (created) => {
+    const id = normalizeId(created);
+    if (id && !form.genre_ids.includes(id)) {
+      form.genre_ids = [...form.genre_ids, id];
+    }
+  });
+};
+
+const handleCreatePublisher = (name) => {
+  handleCreate('createPublisher', name, (created) => {
+    const id = normalizeId(created);
+    if (id) {
+      form.publisher_id = id;
+    }
   });
 };
 </script>
